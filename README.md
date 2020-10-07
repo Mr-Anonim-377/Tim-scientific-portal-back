@@ -1,4 +1,4 @@
-# Tim-scientific-portal_back
+# Tim-scientific-portal_Back
 
 Back-end составляющая системы портала о исследованиях проводимых в рамках программы - "Агротехнологии будущего"
 
