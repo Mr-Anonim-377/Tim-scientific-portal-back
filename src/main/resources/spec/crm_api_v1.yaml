@@ -1,0 +1,258 @@
+openapi: 3.0.1
+info:
+  title: SRM API
+  description: 'Api для управления модулями страницы их стилями и контентом'
+  version: 1.0.0
+servers:
+  - url: 'http://{host}:{port}'
+    variables:
+      "host":
+        enum:
+          - "localhost"
+        default: "localhost"
+      "port":
+        "enum":
+          - "8080"
+        "default": "8080"
+paths:
+  /crm/v1/page:
+    get:
+      operationId: getPageByPageId
+      parameters:
+        - name: pageId
+          schema:
+            type: string
+            format: uuid
+            description: Идетификатор Страницы
+          in: query
+      summary: Получение страницы по ее идентификатору
+      description: 'Получение страницы по ее идентификатору
+      (идентификатор активности и даты создания не валиден в данном методе)'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page'
+        '400':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: 'include_api_errors.yaml#/components/schemas/ApiError'
+        '404':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: 'include_api_errors.yaml#/components/schemas/ApiError'
+
+  /crm/v1/page/modules:
+    get:
+      operationId: getModulesByPageType
+      parameters:
+        - name: pageType
+          in: query
+          schema:
+            $ref: "include_api_enum.yaml#/components/schemas/PageTypeEnum"
+            description: Тип страницы
+      summary: Получение модулей страницы по типу страницы
+      description: Получение моделуй страницы по type и по active - true.
+        Если страниц с данными атрибутами несколько, сервером будет отдана информация о последнем созданном модуле
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Modules'
+        '400':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: 'include_api_errors.yaml#/components/schemas/ApiError'
+        '404':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: 'include_api_errors.yaml#/components/schemas/ApiError'
+
+  /crm/v1/page/modules/objects:
+    get:
+      operationId: getModulesObjectByModuleId
+      parameters:
+        - name: moduleId
+          in: query
+          schema:
+            type: string
+            format: uuid
+            description: Идентификатор модуля
+      summary: Получение обьектов конкретного модуля
+      description: Получение обьектов по идентификатора модуля на странице
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModulesObjects'
+        '400':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: 'include_api_errors.yaml#/components/schemas/ApiError'
+        '404':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: 'include_api_errors.yaml#/components/schemas/ApiError'
+
+  /crm/v1/page/modules/objets/contents:
+    get:
+      operationId: getContentByModulesObjectId
+      parameters:
+        - name: objectId
+          in: query
+          schema:
+            type: string
+            format: uuid
+            description: Идентификатор объекта
+      summary: Получение контента по идентификатору обьекта модуля на странице
+      description: Получение контента по идентификатору обьекта модуля на странице
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contents'
+        '400':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: 'include_api_errors.yaml#/components/schemas/ApiError'
+        '404':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: 'include_api_errors.yaml#/components/schemas/ApiError'
+
+components:
+  schemas:
+    #   ------Page
+    Page:
+      description: Страница портала
+      required:
+        - id
+        - pageType
+        - active
+        - createdAt
+        - name
+        - mobules
+      properties:
+        id:
+          type: string
+          format: uuid
+        pageType:
+          $ref: "include_api_enum.yaml#/components/schemas/PageTypeEnum"
+        active:
+          type: boolean
+          default: true
+        createdAt:
+          type: string
+          format: date-time
+        name:
+          type: string
+        mobules:
+          $ref: "#/components/schemas/Modules"
+
+    #    ------Module
+    Modules:
+      description: Массив модулей страницы
+      type: array
+      items:
+        $ref: '#/components/schemas/Module'
+
+    Module:
+      description: Модуль страницы
+      required:
+        - id
+        - rank
+        - createdAt
+        - moduleType
+        - name
+        - objectCount
+      properties:
+        id:
+          type: string
+          format: uuid
+        rank:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        moduleType:
+          $ref: "include_api_enum.yaml#/components/schemas/ModulesTypeEnum"
+        name:
+          type: string
+        object_count:
+          type: integer
+
+    #    ------ModulesObject
+    ModulesObjects:
+      description: Массив Обьектов модуля
+      type: array
+      items:
+        $ref: '#/components/schemas/ModulesObject'
+
+    ModulesObject:
+      description: Обьект модуля
+      required:
+        - id
+        - objectType
+        - objectRank
+        - name
+        - stule
+      properties:
+        id:
+          type: string
+          format: uuid
+        objectType:
+          $ref: "include_api_enum.yaml#/components/schemas/ModulesObjectTypeEnum"
+        objectRank:
+          type: integer
+        name:
+          type: string
+
+    #    ------Content
+    Contents:
+      description: Массив контента обьектов модулей страницы
+      type: array
+      items:
+        $ref: '#/components/schemas/Content'
+
+    Content:
+      description: Контент обьекта модуля страницы
+      required:
+        - id
+        - name
+        - contentType
+        - value
+      properties:
+        id:
+          type: string
+          format: uuid
+        contentType:
+          $ref: 'include_api_enum.yaml#/components/schemas/ContentTypeEnum'
+        name:
+          type: string
+        value:
+          type: object
+          format: json
