@@ -1,0 +1,27 @@
+openapi: 3.0.1
+info:
+  title: Sample API
+  description: API description in Markdown.
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:8080'
+paths:
+
+components:
+  schemas:
+    ApiError:
+      description: Дефолтная ошибка работы rest сервиса
+      type: object
+      required:
+        - errorType
+        - errorTitle
+        - date
+      properties:
+        errorType:
+          type: string
+          default: "InternalServerError"
+        errorTitle:
+          type: string
+          default: "Don't works rest service"
+        date:
+          type: string

@@ -1,0 +1,129 @@
+plugins {
+    id 'org.springframework.boot' version '2.3.4.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'java'
+    id 'idea'
+    id 'org.hidetake.swagger.generator' version '2.18.2'
+}
+
+configurations {
+    swaggerCodegenV2
+    swaggerCodegenV3
+    openApiGen
+}
+
+group = 'com.tim.scientific.portal'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    jaxb
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+springBoot {
+    mainClassName = 'com.tim.scientific.portal.back.BackApplication'
+}
+bootJar {
+    mainClassName = 'com.tim.scientific.portal.back.BackApplication'
+//    manifest {
+//        attributes 'Start-Class': 'com.Sales.SalesWeb.SalesWebApplication'
+//    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+generateSwaggerCode.configuration {
+    generateSupportingFiles = false
+}
+
+swaggerSources {
+    crmApi {
+        inputFile = file('src/main/resources/spec/crm_api_v1.yaml')
+        code {
+//            configFile = file('config.json')
+            language = 'spring'
+            components = [models: true, apis: true, apiTests: false, supportingFiles: true]
+            additionalProperties = ['modelPackage'           : 'com.tim.scientific.portal.back.dto',
+                                    'apiPackage'             : 'com.tim.scientific.portal.back',
+                                    'invokerPackage'         : 'com.tim.scientific.portal.back',
+                                    'dateLibrary'            : 'java11',
+                                    'hideGenerationTimestamp': 'true',
+                                    'interfaceOnly'          : 'true',
+                                    'useBeanValidation'      : 'true'
+            ]
+            configuration = configurations.openApiGen
+        }
+    }
+}
+
+dependencies {
+    /*Swagger*/
+    compile group: 'javax.annotation', name: 'javax.annotation-api', version: '1.3.2'
+    compile group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
+    openApiGen 'org.openapitools:openapi-generator-cli:3.3.4'
+    compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
+    compile group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.4.4'
+
+    /*Json serialization*/
+    compile('com.fasterxml.jackson.core:jackson-core:2.11.0') {
+        force = true
+    }
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.5'
+    compile group: 'com.vladmihalcea', name: 'hibernate-types-52', version: '2.10.0'
+
+    /*Spring ...*/
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+
+    /*Spring db*/
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+//    implementation 'org.liquibase:liquibase-core'
+//    implementation 'org.springframework.session:spring-session-jdbc'
+    runtimeOnly 'org.postgresql:postgresql'
+
+    /*Spring utils*/
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    /*Spring security*/
+//    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    /*Spring web*/
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-web-services'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    /*Annotation config*/
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    /*Tests dependents*/
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation 'org.springframework.batch:spring-batch-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+}
+
+compileJava.dependsOn swaggerSources.crmApi.code
+sourceSets.main.java.srcDir("${swaggerSources.crmApi.code.outputDir}/src/main/java")
+sourceSets.main.resources.srcDir("${swaggerSources.crmApi.code.outputDir}/src/main/resources")
+
+test {
+    useJUnitPlatform()
+}

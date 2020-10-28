@@ -1,0 +1,45 @@
+openapi: 3.0.0
+info:
+  title: Title
+  description: Title
+  version: 1.0.0
+servers:
+  - url: 'https'
+paths:
+components:
+  schemas:
+
+    ModulesTypeEnum:
+      type: string
+      description: Типы модулей в системе
+      enum:
+        - CAROUSEL
+        - NEWS_CAROUSEL
+        - CUSTOM_CAROUSEL
+        - HEADER
+        - FOOTER
+
+    PageTypeEnum:
+      type: string
+      description: Типы страниц в системе
+      enum:
+        - MAIN_PAGE
+
+    ModulesObjectTypeEnum:
+      type: string
+      description: Типы модульных обьектов в системе
+      enum:
+        - IMAGE
+        - CUSTOM_IMAGE
+        - VIDEO
+        - NEWS_ENTITY
+        - TEXT_WITH_BAGRAUNT_COLOR
+        - NAME
+
+    ContentTypeEnum:
+      type: string
+      description: Типы контента в системе
+      enum:
+        - TEXST
+        - IMAGE
+        - VIDEO_VALUE
