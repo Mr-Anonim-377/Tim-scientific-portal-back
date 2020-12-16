@@ -8,14 +8,109 @@ servers:
     variables:
       "host":
         enum:
-          - "localhost"
-        default: "localhost"
+          - "193.232.106.89"
+        default: "193.232.106.89"
       "port":
         "enum":
-          - "8080"
-        "default": "8080"
+          - "81"
+        "default": "81"
 paths:
-  /crm/v1/page:
+
+  /crm/v1/page/types:
+    get:
+      operationId: getPageTypes
+      summary: Получение типов страниц портала
+      description: 'Получение всех типов страниц'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Types'
+        '400':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /crm/v1/page/modules/types:
+    get:
+      operationId: getModuleTypes
+      summary: Получение типов одулей
+      description: 'Получение всех типов страниц'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Types'
+        '400':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /crm/v1/page/modules/objects/types:
+    get:
+      operationId: getObjectTypes
+      summary: Получение типов объектов модулей
+      description: 'Получение всех типов страниц'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Types'
+        '400':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /crm/v1/page/modules/objects/contents/types:
+    get:
+      operationId: getContentTypes
+      summary: Получение типов контента
+      description: 'Получение всех типов страниц'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Types'
+        '400':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /crm/v1/page/byId:
     get:
       operationId: getPageByPageId
       parameters:
@@ -40,22 +135,42 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'include_api_errors.yaml#/components/schemas/ApiError'
+                $ref: '#/components/schemas/ApiError'
         '404':
           description: Error
           content:
             application/json:
               schema:
-                $ref: 'include_api_errors.yaml#/components/schemas/ApiError'
+                $ref: '#/components/schemas/ApiError'
 
-  /crm/v1/page/modules:
+  /crm/v1/page/all:
     get:
-      operationId: getModulesByPageType
+      summary: Получение всех страниц
+      operationId: getAllPage
+      description: 'Получение всех страниц портала'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pages'
+        '400':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /crm/v1/page/byType:
+    get:
+      operationId: getPageByPageType
       parameters:
         - name: pageType
           in: query
           schema:
-            $ref: "include_api_enum.yaml#/components/schemas/PageTypeEnum"
+            type: string
+            default: 'MAIN_PAGE'
             description: Тип страницы
       summary: Получение модулей страницы по типу страницы
       description: Получение моделуй страницы по type и по active - true.
@@ -66,19 +181,62 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Modules'
+                $ref: "#/components/schemas/Page"
         '400':
           description: Error
           content:
             application/json:
               schema:
-                $ref: 'include_api_errors.yaml#/components/schemas/ApiError'
+                $ref: '#/components/schemas/ApiError'
         '404':
           description: Error
           content:
             application/json:
               schema:
-                $ref: 'include_api_errors.yaml#/components/schemas/ApiError'
+                $ref: '#/components/schemas/ApiError'
+
+  /crm/v1/page/filter/byPageData:
+    get:
+      operationId: getPageByPageTypeAndFilters
+      parameters:
+        - name: pageType
+          in: query
+          schema:
+            type: string
+            default: 'MAIN_PAGE'
+            description: Тип страницы
+        - in: query
+          name: key
+          schema:
+            type: string
+            description: Названия поля, по которому будет идти фильтрация
+        - in: query
+          name: value
+          schema:
+            type: string
+            description: Значение по которому будет идти фильтрация
+      summary: Получение модулей страницы по типу страницы и с применением фильтрации
+      description: Получение модулей страницы по type и по active - true и с применением фильтрации по переданных данным
+        Если страниц с данными атрибутами несколько, сервером будет отдана информация о последней созданной странице
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Page"
+        '400':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
 
   /crm/v1/page/modules/objects:
     get:
@@ -104,13 +262,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'include_api_errors.yaml#/components/schemas/ApiError'
+                $ref: '#/components/schemas/ApiError'
         '404':
           description: Error
           content:
             application/json:
               schema:
-                $ref: 'include_api_errors.yaml#/components/schemas/ApiError'
+                $ref: '#/components/schemas/ApiError'
 
   /crm/v1/page/modules/objets/contents:
     get:
@@ -136,13 +294,29 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'include_api_errors.yaml#/components/schemas/ApiError'
+                $ref: '#/components/schemas/ApiError'
         '404':
           description: Error
           content:
             application/json:
               schema:
-                $ref: 'include_api_errors.yaml#/components/schemas/ApiError'
+                $ref: '#/components/schemas/ApiError'
+
+  /utils/ping:
+    get:
+      operationId: getPing
+      summary: Сервисный метод работоспособности сервиса
+      description: 'Сервисный метод - проверка работы сервиса,
+      если сервис функционирует, возврашает в отете слово pong'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: pong
+
 
 components:
   schemas:
@@ -155,13 +329,13 @@ components:
         - active
         - createdAt
         - name
-        - mobules
+        - modules
       properties:
         id:
           type: string
           format: uuid
         pageType:
-          $ref: "include_api_enum.yaml#/components/schemas/PageTypeEnum"
+          type: string
         active:
           type: boolean
           default: true
@@ -170,8 +344,16 @@ components:
           format: date-time
         name:
           type: string
-        mobules:
+        modules:
           $ref: "#/components/schemas/Modules"
+        byPageData:
+          type: object
+
+    Pages:
+      description: Массив Обьектов модуля
+      type: array
+      items:
+        $ref: '#/components/schemas/Page'
 
     #    ------Module
     Modules:
@@ -199,7 +381,7 @@ components:
           type: string
           format: date-time
         moduleType:
-          $ref: "include_api_enum.yaml#/components/schemas/ModulesTypeEnum"
+          type: string
         name:
           type: string
         object_count:
@@ -218,6 +400,7 @@ components:
         - id
         - objectType
         - objectRank
+        - pageLink
         - name
         - stule
       properties:
@@ -225,11 +408,16 @@ components:
           type: string
           format: uuid
         objectType:
-          $ref: "include_api_enum.yaml#/components/schemas/ModulesObjectTypeEnum"
+          type: string
         objectRank:
           type: integer
+        pageLink:
+          type: string
+          format: uuid
         name:
           type: string
+        contents:
+          $ref: '#/components/schemas/Contents'
 
     #    ------Content
     Contents:
@@ -250,9 +438,34 @@ components:
           type: string
           format: uuid
         contentType:
-          $ref: 'include_api_enum.yaml#/components/schemas/ContentTypeEnum'
+          type: string
         name:
           type: string
         value:
           type: object
           format: json
+
+    #    ------Types
+    Types:
+      description: Массив типов страниц, модулей. обьектов, контента
+      type: array
+      items:
+        type: string
+
+    #     -----Errors
+    ApiError:
+      description: Дефолтная ошибка работы rest сервиса
+      type: object
+      required:
+        - errorType
+        - errorTitle
+        - date
+      properties:
+        errorType:
+          type: string
+          default: "InternalServerError"
+        errorTitle:
+          type: string
+          default: "Don't works rest service"
+        date:
+          type: string
