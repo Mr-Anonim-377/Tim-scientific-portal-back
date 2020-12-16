@@ -1,6 +1,5 @@
 package com.tim.scientific.portal.back.db.models;
 
-import com.tim.scientific.portal.back.dto.ModulesTypeEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,16 +23,16 @@ public class Module {
 
     private String name;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "module_type")
-    private ModulesTypeEnum moduleTypeEnum;
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @JoinColumn (name="module_type_id")
+    private ModulesType moduleType;
 
     private Integer objectCount;
 
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "module")
-    private List<com.tim.scientific.portal.back.db.models.ModulesObject> modulesObjects = new ArrayList<>();
+    private List<ModulesObject> modulesObjects = new ArrayList<>();
 
     @ManyToOne()
     @JoinColumn(name = "page_id")

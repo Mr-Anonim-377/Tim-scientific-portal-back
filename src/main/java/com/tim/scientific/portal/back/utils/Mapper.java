@@ -18,19 +18,20 @@ public class Mapper {
 
     public static com.tim.scientific.portal.back.dto.Page toDtoPage(Page page) {
         return new com.tim.scientific.portal.back.dto.Page()
+                .byPageData(page.getByPageData())
                 .active(page.getActive())
                 .createdAt(toDate(page.getCreatedAt()))
                 .id(page.getPageId())
                 .name(page.getName())
-                .pageType(page.getPageType())
-                .mobules(page.getModules().stream().map(Mapper::toDtoModule).collect(Collectors.toList()));
+                .pageType(page.getPageType().getTypeValue())
+                .modules(page.getModules().stream().map(Mapper::toDtoModule).collect(Collectors.toList()));
     }
 
     public static com.tim.scientific.portal.back.dto.Module toDtoModule(Module module) {
         return new com.tim.scientific.portal.back.dto.Module()
                 .createdAt(toDate(module.getCreatedAt()))
                 .id(module.getModuleId())
-                .moduleType(module.getModuleTypeEnum())
+                .moduleType(module.getModuleType().getTypeValue())
                 .name(module.getName())
                 .objectCount(module.getObjectCount())
                 .rank(module.getRank());
@@ -38,7 +39,7 @@ public class Mapper {
 
     public static com.tim.scientific.portal.back.dto.Content toDtoContent(Content content){
         return new com.tim.scientific.portal.back.dto.Content()
-                .contentType(content.getContentType())
+                .contentType(content.getContentType().getTypeValue())
                 .id(content.getContentId())
                 .name(content.getName())
                 .value(content.getValue());
@@ -49,7 +50,8 @@ public class Mapper {
         .id(modulesObject.getModulesObjectsId())
         .name(modulesObject.getName())
         .objectRank(modulesObject.getObjectRank())
-        .objectType(modulesObject.getModulesObjectType());
+        .objectType(modulesObject.getModulesObjectType().getTypeValue())
+        .pageLink(modulesObject.getPageLink());
     }
 
 }

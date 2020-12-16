@@ -1,7 +1,6 @@
 package com.tim.scientific.portal.back.db.models;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.tim.scientific.portal.back.dto.ContentTypeEnum;
 import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,9 +24,9 @@ public class Content {
     @GeneratedValue()
     private UUID contentId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "content_type")
-    private ContentTypeEnum contentType;
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @JoinColumn (name="content_type_id")
+    private ContentType contentType;
 
     private String name;
 

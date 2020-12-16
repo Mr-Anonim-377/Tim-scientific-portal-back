@@ -1,7 +1,6 @@
 package com.tim.scientific.portal.back.controllers.implementation;
 
 import com.tim.scientific.portal.back.CrmApi;
-import com.tim.scientific.portal.back.dto.PageTypeEnum;
 import com.tim.scientific.portal.back.service.CrmService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +19,19 @@ public class CrmControllerImp implements CrmApi {
     }
 
     @Override
+    public ResponseEntity getPageByPageTypeAndFilters(@Valid String pageType, @Valid String key,
+                                                                      @Valid String value) {
+        return new ResponseEntity(crmService.getDtoPageByPageTypeAndFilters(pageType,key,value), HttpStatus.OK);
+    }
+
+    @Override
     public ResponseEntity getPageByPageId(@Valid UUID pageId) {
         return new ResponseEntity(crmService.getDtoPageById(pageId), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity getModulesByPageType(@Valid PageTypeEnum pageType) {
-        return new ResponseEntity(crmService.getDtoModules(pageType), HttpStatus.OK);
+    public ResponseEntity getPageByPageType(@Valid String pageType) {
+        return new ResponseEntity(crmService.getDtoPageByPage(pageType), HttpStatus.OK);
     }
 
     @Override
@@ -39,4 +44,29 @@ public class CrmControllerImp implements CrmApi {
         return new ResponseEntity(crmService.getContents(objectId), HttpStatus.OK);
     }
 
+    @Override
+    public ResponseEntity getAllPage() {
+        return new ResponseEntity(crmService.getDtoPages(), HttpStatus.OK);
+    }
+
+
+    @Override
+    public ResponseEntity getContentTypes() {
+        return new ResponseEntity(crmService.getContentTypes(), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity getModuleTypes() {
+        return new ResponseEntity(crmService.getModuleTypes(), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity getObjectTypes() {
+        return new ResponseEntity(crmService.getObjectTypes(), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity getPageTypes() {
+        return new ResponseEntity(crmService.getPageTypes(), HttpStatus.OK);
+    }
 }

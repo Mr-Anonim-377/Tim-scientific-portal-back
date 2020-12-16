@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiPredicate;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class ObjectUtils {
@@ -51,6 +52,18 @@ public class ObjectUtils {
         if (!predicate.test(t)) {
             throw apiException;
         }
+    }
+
+// TODO Нужно подумать над ошибками и ассертами
+    protected <T> T objectAssert(CheckedErrorFunction<T,T> function, Predicate<T> predicate, T t) {
+        if (!predicate.test(t)) {
+            try {
+                return function.apply(t);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return t;
     }
 
     protected <T, R> void objectAssert(RuntimeException apiException, BiPredicate<T, R> predicate, T actual, R expected) {

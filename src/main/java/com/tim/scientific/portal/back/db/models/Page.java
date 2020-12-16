@@ -1,8 +1,9 @@
 package com.tim.scientific.portal.back.db.models;
 
-import com.tim.scientific.portal.back.dto.PageTypeEnum;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -22,9 +23,9 @@ public class Page {
 
     private String name;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "page_type")
-    private PageTypeEnum pageType;
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @JoinColumn(name = "page_type_id")
+    private PageType pageType;
 
     private Boolean active;
 
@@ -32,4 +33,8 @@ public class Page {
 
     @OneToMany(mappedBy = "page")
     private List<Module> modules = new ArrayList<>();
+
+    @Type(type = "jsonb-node")
+    @Column(columnDefinition = "jsonb")
+    private JsonNode byPageData;
 }
