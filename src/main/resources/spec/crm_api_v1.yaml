@@ -270,6 +270,44 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
 
+  /crm/v1/page/modules/objects/byTag:
+    get:
+      operationId: getModulesObjectByModuleIdAndByTag
+      parameters:
+        - name: moduleId
+          in: query
+          schema:
+            type: string
+            format: uuid
+            description: Идентификатор модуля
+        - name: tag
+          in: query
+          schema:
+            type: string
+            description: Тэг для деления на группы
+      summary: Получение обьектов конкретного модуля по тегу
+      description: Получение обьектов по идентификатора модуля и тегу на странице
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModulesObjects'
+        '400':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+
   /crm/v1/page/modules/objets/contents:
     get:
       operationId: getContentByModulesObjectId
@@ -317,6 +355,32 @@ paths:
                 type: string
                 example: pong
 
+  /user/createByComand:
+    post:
+      operationId: createByComand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommandMetaDates"
+      summary: Создание сущностей
+      description: Создание сущностей с использованием предописанных команд
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Page"
+        '400':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+
 
 components:
   schemas:
@@ -328,6 +392,7 @@ components:
         - pageType
         - active
         - createdAt
+        - childPage
         - name
         - modules
       properties:
@@ -348,6 +413,8 @@ components:
           $ref: "#/components/schemas/Modules"
         byPageData:
           type: object
+        childPage:
+          $ref: '#/components/schemas/Pages'
 
     Pages:
       description: Массив Обьектов модуля
@@ -402,6 +469,8 @@ components:
         - objectRank
         - pageLink
         - name
+        - childModuleObject
+        - tag
         - stule
       properties:
         id:
@@ -416,8 +485,12 @@ components:
           format: uuid
         name:
           type: string
+        tag:
+          type: string
         contents:
           $ref: '#/components/schemas/Contents'
+        childModuleObject:
+          $ref: '#/components/schemas/ModulesObjects'
 
     #    ------Content
     Contents:
@@ -468,4 +541,19 @@ components:
           type: string
           default: "Don't works rest service"
         date:
+          type: string
+
+    CommandMetaDates:
+      description: Метаданные для запуска команды создания сущностей
+      type: array
+      items:
+        $ref: '#/components/schemas/ContentValue'
+
+    ContentValue:
+      description: Сушность массива метаданных - одна унраная единица
+      type: object
+      properties:
+        ket:
+          type: string
+        value:
           type: string

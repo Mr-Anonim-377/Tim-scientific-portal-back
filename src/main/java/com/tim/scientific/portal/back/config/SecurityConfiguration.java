@@ -1,53 +1,88 @@
 package com.tim.scientific.portal.back.config;
 
+import com.tim.scientific.portal.back.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
+@EnableWebSecurity
 @EnableConfigurationProperties
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
 
-//    final UserService userService;
-//
-//
-//    public SecurityConfiguration(UserService userService) {
-//        this.userService = userService;
-//    }
+    final UserService userService;
+    final BCryptPasswordEncoder bCryptPasswordEncoder;
+    final CsrfTokenResponseHeaderBindingFilter csrfTokenResponseHeaderBindingFilter;
+    final BasicAuthenticationEntryPoint basicAuthenticationEntryPointConfig;
 
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return new CustomPasswordEncoder(cipher, key);
-//        return new BCryptPasswordEncoder();
-//    }
+    public SecurityConfiguration(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder,
+                                 CsrfTokenResponseHeaderBindingFilter csrfTokenResponseHeaderBindingFilter,
+                                 BasicAuthenticationEntryPoint basicAuthenticationEntryPointConfig) {
+        this.userService = userService;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.csrfTokenResponseHeaderBindingFilter = csrfTokenResponseHeaderBindingFilter;
+        this.basicAuthenticationEntryPointConfig = basicAuthenticationEntryPointConfig;
+    }
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .cors().disable()
-                .csrf().disable()
-                .authorizeRequests().antMatchers("/actuator/**").hasRole("ACTUATOR_ADMIN")
+                .authorizeRequests()
+                .antMatchers("/actuator/**").hasRole("ACTUATOR_ADMIN")
+                .antMatchers("/user/**").hasRole("USER")
                 .and().httpBasic()
-                .and().sessionManagement();
+                .authenticationEntryPoint(basicAuthenticationEntryPointConfig)
+                .and().sessionManagement()
+                .and().logout()
+                .logoutUrl("/user/logout/")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .permitAll()
+                .and().cors().disable()
+                .csrf().disable();
+//                .addFilterAfter(csrfTokenResponseHeaderBindingFilter, CsrfFilter.class)
+//                .csrf().csrfTokenRepository(csrfTokenRepository());
     }
 
-//    @Override
-//    public void configure(WebSecurity web) throws Exception {
-//        web.ignoring().antMatchers("/actuator/prometheus");
-//    }
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/actuator/prometheus").antMatchers("/user/registration");
+    }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**").allowedMethods("*");
     }
 
-//    @Override
-//    public void configure(AuthenticationManagerBuilder builder) throws Exception {
-//        builder.userDetailsService(userService);
-//    }
+    private CsrfTokenRepository csrfTokenRepository() {
+        HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
+        repository.setHeaderName("_csrf");
+        repository.setSessionAttributeName(("_csrf"));
+        return repository;
+    }
+
+    @Autowired
+    protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder);
+    }
+
+    @Override
+    public void configure(AuthenticationManagerBuilder builder) throws Exception {
+        builder.userDetailsService(userService);
+    }
 
 }

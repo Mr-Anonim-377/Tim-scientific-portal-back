@@ -1,13 +1,12 @@
 package com.tim.scientific.portal.back.utils;
 
-import com.tim.scientific.portal.back.db.models.Content;
 import com.tim.scientific.portal.back.db.models.Module;
-import com.tim.scientific.portal.back.db.models.ModulesObject;
-import com.tim.scientific.portal.back.db.models.Page;
+import com.tim.scientific.portal.back.db.models.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class Mapper {
@@ -37,7 +36,7 @@ public class Mapper {
                 .rank(module.getRank());
     }
 
-    public static com.tim.scientific.portal.back.dto.Content toDtoContent(Content content){
+    public static com.tim.scientific.portal.back.dto.Content toDtoContent(Content content) {
         return new com.tim.scientific.portal.back.dto.Content()
                 .contentType(content.getContentType().getTypeValue())
                 .id(content.getContentId())
@@ -45,13 +44,20 @@ public class Mapper {
                 .value(content.getValue());
     }
 
-    public static com.tim.scientific.portal.back.dto.ModulesObject toDtoModulesObject(ModulesObject modulesObject){
+    public static com.tim.scientific.portal.back.dto.ModulesObject toDtoModulesObject(ModulesObject modulesObject) {
+        ModuleObjectTag tag = modulesObject.getTag();
+        List<com.tim.scientific.portal.back.dto.ModulesObject> dtoModulesObjectList = modulesObject.getChildModulesObjects().stream()
+                .map(Mapper::toDtoModulesObject)
+                .collect(Collectors.toList());
         return new com.tim.scientific.portal.back.dto.ModulesObject()
-        .id(modulesObject.getModulesObjectsId())
-        .name(modulesObject.getName())
-        .objectRank(modulesObject.getObjectRank())
-        .objectType(modulesObject.getModulesObjectType().getTypeValue())
-        .pageLink(modulesObject.getPageLink());
+                .id(modulesObject.getModulesObjectsId())
+                .tag(tag == null ? null : tag.getTag())
+                .childModuleObject(dtoModulesObjectList)
+                .contents(modulesObject.getContents().stream().map(Mapper::toDtoContent).collect(Collectors.toList()))
+                .name(modulesObject.getName())
+                .objectRank(modulesObject.getObjectRank())
+                .objectType(modulesObject.getModulesObjectType().getTypeValue())
+                .pageLink(modulesObject.getPageLink());
     }
 
 }

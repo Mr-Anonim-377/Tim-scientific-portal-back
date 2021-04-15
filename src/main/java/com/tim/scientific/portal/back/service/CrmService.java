@@ -1,7 +1,13 @@
 package com.tim.scientific.portal.back.service;
 
+import com.tim.scientific.portal.back.db.models.Content;
 import com.tim.scientific.portal.back.db.models.Module;
-import com.tim.scientific.portal.back.db.models.*;
+import com.tim.scientific.portal.back.db.models.ModulesObject;
+import com.tim.scientific.portal.back.db.models.Page;
+import com.tim.scientific.portal.back.db.models.crm.type.ContentType;
+import com.tim.scientific.portal.back.db.models.crm.type.ModulesObjectType;
+import com.tim.scientific.portal.back.db.models.crm.type.ModulesType;
+import com.tim.scientific.portal.back.db.models.crm.type.PageType;
 import com.tim.scientific.portal.back.db.repository.*;
 import com.tim.scientific.portal.back.utils.AbstractService;
 import com.tim.scientific.portal.back.utils.Mapper;
@@ -110,6 +116,17 @@ public class CrmService extends AbstractService {
 
     public List<com.tim.scientific.portal.back.dto.ModulesObject> getDtoModulesObjects(UUID modulesId) {
         List<ModulesObject> modulesObjects = getDbModule(modulesId).getModulesObjects();
+        listAssert(modulesObjects, isNotEmptyList());
+        return modulesObjects.stream()
+                .map(Mapper::toDtoModulesObject)
+                .sorted(Comparator.comparing(com.tim.scientific.portal.back.dto.ModulesObject::getObjectRank).reversed())
+                .collect(Collectors.toList());
+    }
+
+    public List<com.tim.scientific.portal.back.dto.ModulesObject> getDtoModulesObjectsByTag(UUID modulesId, String tag) {
+        CheckedErrorFunction<UUID, List<ModulesObject>> sqlFunction = uuid ->
+                modulesObjectRepository.findByModule_ModuleId_AndTag_Tag(uuid, tag);
+        List<ModulesObject> modulesObjects = applyHibernateQuery(modulesId, sqlFunction);
         listAssert(modulesObjects, isNotEmptyList());
         return modulesObjects.stream()
                 .map(modulesObject ->

@@ -16,11 +16,13 @@ build/
 
 ### IntelliJ IDEA ###
 .idea/
+*.properties
 *.iws
 *.iml
 *.ipr
 out/
 !**/src/main/**/out/
+!**/src/main/resourse/application.properties
 !**/src/test/**/out/
 ### NetBeans ###
 /nbproject/private/

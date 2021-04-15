@@ -1,5 +1,6 @@
-package com.tim.scientific.portal.back.db.models;
+package com.tim.scientific.portal.back.db.models.crm.type;
 
+import com.tim.scientific.portal.back.db.models.Module;
 import lombok.Getter;
 import lombok.Setter;
 

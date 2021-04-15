@@ -1,6 +1,6 @@
 package com.tim.scientific.portal.back.db.repository;
 
-import com.tim.scientific.portal.back.db.models.ModulesType;
+import com.tim.scientific.portal.back.db.models.crm.type.ModulesType;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

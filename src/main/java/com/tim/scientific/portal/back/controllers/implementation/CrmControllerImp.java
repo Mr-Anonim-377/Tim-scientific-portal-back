@@ -1,12 +1,14 @@
 package com.tim.scientific.portal.back.controllers.implementation;
 
 import com.tim.scientific.portal.back.CrmApi;
+import com.tim.scientific.portal.back.dto.ModulesObject;
 import com.tim.scientific.portal.back.service.CrmService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -37,6 +39,11 @@ public class CrmControllerImp implements CrmApi {
     @Override
     public ResponseEntity getModulesObjectByModuleId(@Valid UUID moduleId) {
         return new ResponseEntity(crmService.getDtoModulesObjects(moduleId), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<List<ModulesObject>> getModulesObjectByModuleIdAndByTag(@Valid UUID moduleId, @Valid String tag) {
+        return new ResponseEntity(crmService.getDtoModulesObjectsByTag(moduleId, tag), HttpStatus.OK);
     }
 
     @Override
