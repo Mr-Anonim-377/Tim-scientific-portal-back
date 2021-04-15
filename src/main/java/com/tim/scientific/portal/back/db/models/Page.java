@@ -1,6 +1,8 @@
 package com.tim.scientific.portal.back.db.models;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.tim.scientific.portal.back.db.models.crm.type.PageType;
+import com.tim.scientific.portal.back.db.models.security.UserPage;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
@@ -37,4 +39,7 @@ public class Page {
     @Type(type = "jsonb-node")
     @Column(columnDefinition = "jsonb")
     private JsonNode byPageData;
+
+    @OneToMany(mappedBy = "page")
+    private List<UserPage> editingUser  = new ArrayList<>();
 }

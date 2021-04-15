@@ -10,17 +10,15 @@ import javax.persistence.Table;
 import java.util.UUID;
 
 @Entity
-@Table(name = "users")
 @Getter
 @Setter
-public class User {
+@Table(name = "modules_objects_tag")
+public class ModuleObjectTag {
 
     @Id
     @GeneratedValue()
-    private UUID userId;
+    private UUID modulesObjectsTagId;
 
-//    Email
-    private String login;
+    private String tag;
 
-    private String passwordHash;
 }

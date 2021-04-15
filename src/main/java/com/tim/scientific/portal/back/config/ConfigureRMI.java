@@ -7,6 +7,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.jmx.support.ConnectorServerFactoryBean;
 import org.springframework.remoting.rmi.RmiRegistryFactoryBean;
 
+@Deprecated
 @Configuration
 public class ConfigureRMI {
 

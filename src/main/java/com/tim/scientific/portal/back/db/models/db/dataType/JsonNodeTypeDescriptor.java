@@ -1,4 +1,4 @@
-package com.tim.scientific.portal.back.db.models.dataType;
+package com.tim.scientific.portal.back.db.models.db.dataType;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vladmihalcea.hibernate.type.json.internal.JacksonUtil;

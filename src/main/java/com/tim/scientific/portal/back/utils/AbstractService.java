@@ -1,9 +1,9 @@
 package com.tim.scientific.portal.back.utils;
 
 import com.google.common.collect.ImmutableMap;
+import com.tim.scientific.portal.back.controllers.common.handlers.exception.ApiException;
 import com.tim.scientific.portal.back.controllers.common.handlers.exception.InternalServerException;
 import com.tim.scientific.portal.back.controllers.common.handlers.exception.NoSuchObject;
-import com.tim.scientific.portal.back.utils.ObjectUtils;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -40,10 +40,19 @@ public abstract class AbstractService extends ObjectUtils {
 
     protected <T, R> R applySqlFunctionAndAssert(CheckedErrorFunction<T, R> function, T t,
                                                  Predicate<Object> predicate) {
+        return applyFunction(new NoSuchObject(),function, t, predicate);    }
+
+    protected <T, R> R applySqlFunctionAndAssert(ApiException e,CheckedErrorFunction<T, R> function, T t,
+                                                 Predicate<Object> predicate) {
+        return applyFunction(e,function, t, predicate);
+    }
+
+    private <T, R> R applyFunction(ApiException e,CheckedErrorFunction<T, R> function, T t, Predicate<Object> predicate) {
         R result = applyHibernateQuery(t, function);
-        objectAssert(new NoSuchObject(), predicate, result);
+        objectAssert(e, predicate, result);
         return result;
     }
+
 
     protected <R> R applySqlFunctionAndAssert(CheckedErrorSupplier<R> function,
                                               Predicate<Object> predicate) {

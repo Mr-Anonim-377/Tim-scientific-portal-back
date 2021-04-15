@@ -1,6 +1,7 @@
 package com.tim.scientific.portal.back.db.models;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.tim.scientific.portal.back.db.models.crm.type.ContentType;
 import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType;
 import lombok.Getter;
 import lombok.Setter;
